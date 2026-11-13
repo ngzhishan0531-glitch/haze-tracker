@@ -2,47 +2,72 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hello, World</title>
-  <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: #eaf6ff;
-      font-family: system-ui, sans-serif;
-    }
-    h1 { color: #2d6a4f; margin: 0 0 8px; }
-    svg { width: min(320px, 80vw); height: auto; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Haze Tracker</title>
+  <meta name="description" content="Singapore PSI by region, with threshold alerts.">
+  <meta name="theme-color" content="#1c2740">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Haze">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Hello, World!</h1>
-  <svg viewBox="0 0 200 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A pink flower">
-    <!-- stem -->
-    <path d="M100 150 C95 200 105 250 100 295" stroke="#2d6a4f" stroke-width="6" fill="none" stroke-linecap="round"/>
-    <!-- leaves -->
-    <path d="M100 235 C65 235 50 210 48 190 C80 192 98 210 100 235 Z" fill="#40916c"/>
-    <path d="M101 200 C135 200 152 175 154 155 C122 157 103 175 101 200 Z" fill="#52b788"/>
-    <!-- petals -->
-    <g fill="#ff7eb6" stroke="#e0508f" stroke-width="1.5">
-      <ellipse cx="100" cy="68" rx="20" ry="36"/>
-      <ellipse cx="100" cy="68" rx="20" ry="36" transform="rotate(45 100 100)"/>
-      <ellipse cx="100" cy="68" rx="20" ry="36" transform="rotate(90 100 100)"/>
-      <ellipse cx="100" cy="68" rx="20" ry="36" transform="rotate(135 100 100)"/>
-      <ellipse cx="100" cy="68" rx="20" ry="36" transform="rotate(180 100 100)"/>
-      <ellipse cx="100" cy="68" rx="20" ry="36" transform="rotate(225 100 100)"/>
-      <ellipse cx="100" cy="68" rx="20" ry="36" transform="rotate(270 100 100)"/>
-      <ellipse cx="100" cy="68" rx="20" ry="36" transform="rotate(315 100 100)"/>
-    </g>
-    <!-- center -->
-    <circle cx="100" cy="100" r="20" fill="#ffd166" stroke="#e9a820" stroke-width="2"/>
-    <circle cx="94" cy="95" r="2.5" fill="#e9a820"/>
-    <circle cx="105" cy="97" r="2.5" fill="#e9a820"/>
-    <circle cx="99" cy="107" r="2.5" fill="#e9a820"/>
-  </svg>
+  <header>
+    <h1>Haze Tracker</h1>
+    <button id="refresh" class="icon-btn" aria-label="Refresh">&#x21bb;</button>
+  </header>
+
+  <main>
+    <p id="status" class="status" role="status">Loading…</p>
+
+    <section id="hero" class="hero" aria-live="polite"></section>
+
+    <h2>All regions</h2>
+    <section id="regions" class="regions"></section>
+
+    <h2>Alerts</h2>
+    <form id="alerts" class="card">
+      <label>Region
+        <select id="region"></select>
+      </label>
+      <label>Reading to watch
+        <select id="metric">
+          <option value="psi24">24-hr PSI</option>
+          <option value="pm1">1-hr PM2.5 (µg/m³)</option>
+        </select>
+      </label>
+      <label>Alert me when it reaches
+        <input id="threshold" type="number" inputmode="numeric" min="1" max="999" step="1">
+      </label>
+      <p class="hint" id="threshold-hint"></p>
+      <label class="switch">
+        <input id="enabled" type="checkbox">
+        <span>Send me notifications</span>
+      </label>
+      <div class="row">
+        <button type="submit" class="primary">Save</button>
+        <button type="button" id="test" class="ghost">Send test</button>
+      </div>
+      <p id="alert-msg" class="hint" role="status"></p>
+    </form>
+
+    <details class="card info">
+      <summary>How alerts work</summary>
+      <p>Alerts fire when the reading rises from below your threshold to at or above it, and again only after it has dropped below and crossed back.</p>
+      <p>This app has no server, so checks run on your phone: while the app is open, and in the background on Android Chrome when the app is installed (timing is up to the browser, often hourly). iPhone: add to Home Screen first (iOS 16.4+), then enable notifications.</p>
+    </details>
+
+    <footer>
+      <p id="install-tip" hidden></p>
+      <p>Data: NEA via <a href="https://data.gov.sg" target="_blank" rel="noopener">data.gov.sg</a>, Singapore Open Data Licence. PSI updates hourly. 1-hr reading is PM2.5 concentration, as NEA publishes.</p>
+    </footer>
+  </main>
+
+  <script src="shared.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
